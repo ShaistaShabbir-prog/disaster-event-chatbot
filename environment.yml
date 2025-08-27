@@ -23,7 +23,7 @@ dependencies:
   - make
   - compilers
   - pytorch
-  - cpuonly
+  
   - pip:
       - langgraph==0.2.29
       - streamlit-folium==0.20.0

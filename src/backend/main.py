@@ -1,25 +1,29 @@
-
 from fastapi import FastAPI, Query
 from typing import Optional
 from .agent import build_graph
 from . import db, config
+from fastapi.responses import RedirectResponse
 
 app = FastAPI(title="Disaster Bot")
 graph = build_graph()
 conn = db.get_conn(config.DB_PATH)
 
+
 @app.get("/health")
 def health():
-    return {"status":"ok"}
+    return {"status": "ok"}
+
 
 @app.post("/ingest/run")
 def ingest():
-    out = graph.invoke({"action":"ingest"})
+    out = graph.invoke({"action": "ingest"})
     return {"stored": out.get("stored", 0)}
+
 
 @app.get("/chat")
 def chat():
-    return {"answer": graph.invoke({"action":"answer"}).get("answer")}
+    return {"answer": graph.invoke({"action": "answer"}).get("answer")}
+
 
 @app.get("/events")
 def events(
@@ -29,6 +33,17 @@ def events(
     since: Optional[str] = Query(default=None),
     limit: int = Query(default=200, ge=1, le=1000),
 ):
-    filters = {"event_type": event_type, "country": country, "source": source, "since": since}
+    filters = {
+        "event_type": event_type,
+        "country": country,
+        "source": source,
+        "since": since,
+    }
     evs = db.query_events(conn, filters=filters, limit=limit)
     return {"events": evs}
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    # redirect to the interactive docs
+    return RedirectResponse(url="/docs")
