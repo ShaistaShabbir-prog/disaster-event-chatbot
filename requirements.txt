@@ -1,0 +1,14 @@
+
+fastapi
+uvicorn[standard]
+requests
+pydantic
+langgraph
+networkx
+feedparser
+folium
+streamlit
+streamlit-folium
+python-dotenv
+tqdm
+pytest
