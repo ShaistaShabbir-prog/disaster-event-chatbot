@@ -19,8 +19,13 @@ def store_node(s:State)->State:
     if "fetched" in s: s["stored"]=db.insert_events(conn,s["fetched"])
     return s
 def answer_node(s:State)->State:
-    evs=db.query_events(conn,limit=10)
-    s["answer"]="\n".join([f"- {e['event_type']}: {e['title']} ({e['start_time']})" for e in evs])
+    evs=db.query_events(conn,limit=40)
+    try:
+        from .nlp_hf import summarize_events
+        summary = summarize_events(evs, max_events=12)
+        s['answer'] = summary
+    except Exception:
+        s['answer'] = "\n".join([f"- {e['event_type']}: {e['title']} ({e['start_time']})" for e in evs[:10]])
     return s
 
 def build_graph():

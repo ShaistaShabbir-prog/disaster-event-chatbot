@@ -1,0 +1,15 @@
+
+services:
+  disaster-event-chatbot:
+    build: .
+    container_name: disaster-event-chatbot
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    environment:
+      - DB_PATH=/app/data/events.db
+      - API_PORT=8000
+      - UI_PORT=8501
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

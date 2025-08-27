@@ -1,14 +1,28 @@
 
-fastapi
-uvicorn[standard]
-requests
-pydantic
-langgraph
-networkx
-feedparser
-folium
-streamlit
-streamlit-folium
-python-dotenv
-tqdm
-pytest
+# Core runtime
+fastapi==0.111.0
+uvicorn[standard]==0.30.0
+requests==2.32.3
+pydantic==2.8.2
+langgraph==0.2.29
+networkx==3.3
+feedparser==6.0.11
+folium==0.17.0
+streamlit==1.37.1
+streamlit-folium==0.20.0
+python-dotenv==1.0.1
+tqdm==4.66.4
+
+# Data stack
+pandas==2.2.2
+numpy==1.26.4
+pyarrow==17.0.0
+
+# Hugging Face / NLP
+transformers==4.43.3
+accelerate==0.33.0
+sentencepiece==0.2.0
+# CPU-only torch will be pulled automatically; if needed pin explicitly
+
+# Testing
+pytest==8.2.2

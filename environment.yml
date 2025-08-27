@@ -1,0 +1,32 @@
+
+name: disaster_event_chatbot
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - fastapi=0.111.0
+  - uvicorn=0.30.0
+  - requests=2.32.3
+  - pydantic=2.8.2
+  - networkx=3.3
+  - feedparser=6.0.11
+  - folium=0.17.0
+  - streamlit=1.37.1
+  - python-dotenv=1.0.1
+  - tqdm=4.66.4
+  - pandas=2.2.2
+  - numpy=1.26.4
+  - pyarrow=17.0.0
+  - pytest=8.2.2
+  - cmake
+  - make
+  - compilers
+  - pytorch
+  - cpuonly
+  - pip:
+      - langgraph==0.2.29
+      - streamlit-folium==0.20.0
+      - transformers==4.43.3
+      - accelerate==0.33.0
+      - sentencepiece==0.2.0
