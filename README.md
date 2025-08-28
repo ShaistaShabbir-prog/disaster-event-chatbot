@@ -36,7 +36,7 @@ Create a `.env` file in the project root (copy from `.env.example` if present):
 DB_PATH=./data/events.db   # default path
 INGEST_SOURCES=usgs,gdacs,reliefweb
 ```
-> This build uses **Hugging Face Transformers locally** for summarization (no OpenAI required).
+> This build uses **Hugging Face Transformers locally** for summarization.
 
 ---
 
@@ -134,7 +134,7 @@ Makefile
 ---
 
 ## 🐳 Docker (optional)
-A basic Dockerfile/compose can be added. If you want it now, ask and we’ll include:
+
 - Multi-stage build with Python 3.11-slim
 - Installs requirements, exposes 8000 (API) and 8501 (UI)
 - Starts both services inside the container
@@ -172,7 +172,3 @@ pip install --only-binary :all: pyarrow
 
 ---
 
-## 🤗 Hugging Face (Local Inference)
-- The `/chat` endpoint and UI summary use **Transformers** (default: `sshleifer/distilbart-cnn-12-6`).  
-- First run will download model weights to your cache (`~/.cache/huggingface`).  
-- No OpenAI key required. You can swap models in `src/backend/nlp_hf.py`.
