@@ -1,12 +1,18 @@
-
+# src/backend/db.py
 import sqlite3, os, json, time
 
-def get_conn(db_path):
+
+def get_conn(db_path: str):
+    # Ensure parent dir exists and open SQLite connection
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
     return sqlite3.connect(db_path, check_same_thread=False)
 
-def init_db(conn):
-    conn.execute('''CREATE TABLE IF NOT EXISTS events (
+
+def init_db(conn: sqlite3.Connection):
+    # Table includes latitude/longitude so the map can render markers
+    conn.execute(
+        """
+    CREATE TABLE IF NOT EXISTS events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         source TEXT,
         event_type TEXT,
@@ -20,26 +26,55 @@ def init_db(conn):
         url TEXT,
         raw_json TEXT,
         created_at TEXT
-    )''')
+    )
+    """
+    )
     conn.commit()
 
-def insert_events(conn, events):
-    rows = [(e.get("source"), e.get("event_type"), e.get("title"),
-             e.get("description"), e.get("latitude"), e.get("longitude"),
-             e.get("country"), e.get("magnitude"), e.get("start_time"),
-             e.get("url"), json.dumps(e.get("raw_json", {})),
-             time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
-            for e in events]
+
+def insert_events(conn: sqlite3.Connection, events):
+    rows = []
+    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    for e in events:
+        rows.append(
+            (
+                e.get("source"),
+                e.get("event_type"),
+                e.get("title"),
+                e.get("description"),
+                e.get("latitude"),
+                e.get("longitude"),
+                e.get("country"),
+                e.get("magnitude"),
+                e.get("start_time"),
+                e.get("url"),
+                json.dumps(e.get("raw_json", {})),
+                now,
+            )
+        )
     conn.executemany(
-        "INSERT INTO events (source,event_type,title,description,latitude,longitude,country,magnitude,start_time,url,raw_json,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-        rows
+        """
+        INSERT INTO events (
+            source, event_type, title, description,
+            latitude, longitude, country, magnitude,
+            start_time, url, raw_json, created_at
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+    """,
+        rows,
     )
     conn.commit()
     return len(rows)
 
-def query_events(conn, filters=None, limit=200):
+
+def query_events(conn: sqlite3.Connection, filters=None, limit=200):
     filters = filters or {}
-    sql = "SELECT id, source, event_type, title, description, latitude, longitude, country, magnitude, start_time, url FROM events WHERE 1=1"
+    sql = """
+    SELECT id, source, event_type, title, description,
+           latitude, longitude, country, magnitude,
+           start_time, url
+    FROM events
+    WHERE 1=1
+    """
     args = []
     if filters.get("event_type"):
         sql += " AND lower(event_type)=lower(?)"
