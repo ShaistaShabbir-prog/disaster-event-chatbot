@@ -7,6 +7,7 @@ import os
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import logging
+from .kg import build_event_graph, to_vis_json
 
 app = FastAPI(title="Disaster Bot")
 graph = build_graph()
@@ -86,3 +87,36 @@ def events(
         limit=limit,
     )
     return {"events": evs}
+
+
+@app.get("/graph")
+def graph_endpoint(
+    event_type: Optional[str] = Query(default=None),
+    country: Optional[str] = Query(default=None),
+    source: Optional[str] = Query(default=None),
+    since: Optional[str] = Query(default=None),
+    limit: int = Query(default=500, ge=1, le=5000),
+    connect_sequence: bool = Query(default=True),
+    sequence_by: str = Query(default="country", pattern="^(country|event_type)$"),
+    include_types: bool = Query(default=True),
+    include_countries: bool = Query(default=True),
+):
+    conn = db.get_conn(config.DB_PATH)
+    evs = db.query_events(
+        conn,
+        filters={
+            "event_type": event_type,
+            "country": country,
+            "source": source,
+            "since": since,
+        },
+        limit=limit,
+    )
+    G = build_event_graph(
+        evs,
+        connect_sequence=connect_sequence,
+        sequence_by=sequence_by,
+        include_types=include_types,
+        include_countries=include_countries,
+    )
+    return to_vis_json(G, limit=limit * 2)  # a bit more edge headroom
