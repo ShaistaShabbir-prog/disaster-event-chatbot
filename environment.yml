@@ -23,6 +23,8 @@ dependencies:
   - make
   - compilers
   - pytorch
+  - apscheduler=3.10.4
+
   
   - pip:
       - langgraph==0.2.29
